@@ -44,7 +44,7 @@ Resources:
     Type: AWS::Serverless::Function 
     Properties:
       CodeUri: patient-checkout/
-      Handler: bill_management.lambda_handler
+      Handler: bill_management.lambda_handler   
       Events:
         SNSEvent:
           Type: SNS

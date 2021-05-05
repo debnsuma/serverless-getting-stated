@@ -27,8 +27,3 @@ def lambda_handler(event, context):
             MessageStructure = 'json'
         )
         
-        
-    
-    
-    
-    
