@@ -11,23 +11,42 @@ Globals:
 
 Resources:
 
+  PatientCheckoutTopic:
+    Type: AWS::SNS::Topic
+
   PatientCheckoutBucket:
     Type: AWS::S3::Bucket 
     Properties: 
       BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}
     
   PatientCheckoutFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       CodeUri: patient-checkout/
       Handler: patient_checkout.lambda_handler
-      Runtime: python3.8
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt PatientCheckoutTopic.TopicName
+      Environment:
+        Variables:
+          PATIENT_CHECKOUT_TOPIC: !Ref PatientCheckoutTopic
       Events:
         S3Event:
           Type: S3
           Properties:
             Bucket: !Ref PatientCheckoutBucket
             Events: s3:ObjectCreated:*
-      Policies:
-        - S3ReadPolicy:
-            BucketName: !Ref PatientCheckoutBucket
+
+
+  BillManagementFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: patient-checkout/
+      Handler: bill_management.lambda_handler
+      Events:
+        SNSEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref PatientCheckoutTopic

@@ -6,6 +6,6 @@ codeuri = "patient-checkout/"
 runtime = "python3.8"
 source_md5 = ""
 packagetype = "Zip"
-functions = ["PatientCheckoutFunction"]
+functions = ["PatientCheckoutFunction", "BillManagementFunction"]
 
 [layer_build_definitions]

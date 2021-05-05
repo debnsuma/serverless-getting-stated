@@ -1,11 +1,14 @@
 import json
-import boto3 
+import os 
+import boto3
 
 s3 = boto3.client('s3')
-
+sns = boto3.client('sns')
 
 def lambda_handler(event, context):
     
+    topic = os.environ['PATIENT_CHECKOUT_TOPIC']
+
     # Fetch Bucket details from the event 
     bucket_name = event['Records'][0]['s3']['bucket']['name']
     file_name = event['Records'][0]['s3']['object']['key']
@@ -18,6 +21,11 @@ def lambda_handler(event, context):
     # Iterate through the all the data in the 'checlout_event'
     for each_event in checkout_events:
         print(each_event)
+        sns.publish(
+            TopicArn = topic,
+            Message = json.dumps({"default" : json.dumps(each_event)}),
+            MessageStructure = 'json'
+        )
         
         
     
